@@ -1,0 +1,95 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="WavesApp">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.5/angular.min.js"></script>
+
+    <style>
+        .main-img {
+            background-image: url('http://www.sansebastianturismo.com/images/ssturismo/surf-zurriola.jpg');
+            width: 686px;
+            height: 392px;
+            position: relative;
+        }
+
+        .wave-desc {
+            position: absolute;
+        }
+
+        .wave-heigth {
+            position: absolute;
+            top: 0px;
+            opacity: 0.8;
+            background-color: #fff;
+            width: 100%;
+            height: 0px;
+            vertical-align: bottom;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        var app = angular.module('WavesApp', []);
+        app.controller('WavesController', function ($scope, $http) {
+
+            $scope.data = { Height: '350', HeightMax: document.querySelector('.main-img').clientHeight, HeightDescription: 'knee' };
+            $http.get("api/Values").success(function (data, status, headers, config) {
+                $scope.data.Height = data.Height;
+                //$scope.$apply();
+
+            });
+
+            $scope.userChangeWaveHeight = function () {
+                $scope.data.Height = window.event.y;
+                var req = {
+                    method: 'POST',
+                    url: 'api/Values',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    data: $scope.data
+                }
+
+
+                $http(req).success(function (data, status, headers, config) {
+                    console.dir("Post.Success");
+                    $scope.data.Height = data.Height;
+                    //$scope.data.Height = window.event.y; //server should return avg of wave Heights based on user location
+                }).error(function (d) {
+                    console.dir(d);
+                });
+            };
+
+            $scope.$watch('data.Height', function () {
+                move('.wave-heigth').set('height', $scope.data.Height + "px").duration(2000).end();
+            });
+
+
+        });
+
+    </script>
+
+
+
+    <div class="container-fluid" ng-controller="WavesController">
+        <div class="row-fluid">
+            <div class="span8">
+                <div class="main-img img-responsive" ng-click="userChangeWaveHeight()">
+                    <div class="wave-heigth"></div>
+                    <div class="wave-desc">{{data.HeightDescription}}</div>
+                </div>
+            </div>
+            <div class="span4">
+                <!--Body content-->
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/move.js/0.4.0/move.min.js"></script>
+</body>
+</html>
