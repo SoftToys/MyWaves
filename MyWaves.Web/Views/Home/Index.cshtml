@@ -38,7 +38,7 @@
         var app = angular.module('WavesApp', []);
         app.controller('WavesController', function ($scope, $http) {
 
-            $scope.data = { Height: '350', HeightMax: document.querySelector('.main-img').clientHeight, HeightDescription: 'knee' };
+            $scope.data = { Height: '350', HeightMax: document.querySelector('.main-img').clientHeight, HeightDescription: 'Shoulder' };
             $http.get("api/Values").success(function (data, status, headers, config) {
                 $scope.data.Height = data.Height;
                 //$scope.$apply();
